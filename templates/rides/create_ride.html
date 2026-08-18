@@ -1,0 +1,28 @@
+{% extends 'rides/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 p-4" style="border-radius: 16px;">
+            <h3 class="fw-bold mb-3" style="color: var(--gt-primary);">Публикувай ново пътуване</h3>
+            <p class="text-muted mb-4">Попълни детайлите за маршрута, за да си намериш спътници.</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    {% for field in form %}
+                        <div class="col-md-6 mb-2">
+                            <label class="form-label fw-semibold small text-secondary">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-gt-accent w-100 mt-4 py-2 fs-6">Публикувай обявата</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

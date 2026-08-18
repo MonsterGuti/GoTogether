@@ -1,0 +1,87 @@
+{% extends 'rides/base.html' %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="hero-section text-center">
+                <h2 class="fw-extrabold mb-2">Намери следващото си пътуване</h2>
+                <p class="mb-4 opacity-75">Спестявай разходи и пътувай с утвърдени шофьори.</p>
+
+                <div class="search-container mx-auto">
+                    <form method="GET" class="row g-2 align-items-center">
+                        <div class="col-md-4">
+                            <input type="text" name="origin" value="{{ origin_query }}"
+                                   class="form-control form-control-gt w-100" placeholder="Откъде тръгваш?">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="destination" value="{{ destination_query }}"
+                                   class="form-control form-control-gt w-100" placeholder="Накъде отиваш?">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-gt-primary w-100">Търси пътуване</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold m-0" style="color: var(--gt-primary);">Предстоящи маршрути</h5>
+                <span class="badge bg-secondary px-2 py-1">{{ rides|length }} намерени</span>
+            </div>
+
+            <div class="row g-4">
+                {% for ride in rides %}
+                    <div class="col-md-6">
+                        <a href="{% url 'ride_detail' ride.pk %}" class="text-decoration-none text-dark d-block">
+                            <div class="ride-card">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <h5 class="fw-bold mb-1" style="color: var(--gt-primary);">
+                                            {{ ride.origin }} <span
+                                                class="text-muted fw-light mx-1">➔</span> {{ ride.destination }}
+                                        </h5>
+                                    </div>
+                                    <span class="badge rounded-pill bg-success px-3 py-2 fs-6 shadow-sm">
+                {{ ride.price_per_seat }} €.
+            </span>
+                                </div>
+
+                                <div class="text-muted small mb-3">
+                                    📅 {{ ride.departure_time|date:"d M (D), H:i" }} ч.
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                                    <div class="d-flex align-items-center">
+                                        <div class="driver-avatar me-2">
+                                            {% if ride.driver.first_name %}
+                                                {{ ride.driver.first_name|slice:":1"|upper }}
+                                            {% else %}
+                                                {{ ride.driver.username|slice:":1"|upper }}
+                                            {% endif %}
+                                        </div>
+                                        <span class="fw-semibold text-dark">
+            {% if ride.driver.first_name or ride.driver.last_name %}
+                {{ ride.driver.first_name }} {{ ride.driver.last_name }}
+            {% else %}
+                {{ ride.driver.username }}
+            {% endif %}
+        </span>
+                                    </div>
+                                    <span class="text-success fw-bold small">💺 {{ ride.available_seats }} места</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-5">
+                        <p class="text-muted fs-5 mb-0">Все още няма налични пътувания по избраните критерии.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

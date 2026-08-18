@@ -1,0 +1,83 @@
+{% extends 'rides/base.html' %}
+
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-3">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow-sm border-0 p-4" style="border-radius: 16px;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="fw-bold m-0" style="color: var(--gt-primary);">
+                        {{ ride.origin }} <span class="text-muted fw-light mx-1">➔</span> {{ ride.destination }}
+                    </h3>
+                    <span class="badge rounded-pill bg-success px-3 py-2 fs-5 shadow-sm">
+                    {{ ride.price_per_seat }} €.
+                </span>
+                </div>
+
+                <hr class="my-3">
+
+                <div class="row g-3 my-2">
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block">Дата и час</span>
+                        <strong class="fs-6">📅 {{ ride.departure_time|date:"d M Y, H:i" }} ч.</strong>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="text-muted small d-block">Свободни места</span>
+                        <strong class="fs-6 text-success">💺 {{ ride.available_seats }} места</strong>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center mt-4 pt-3 border-top">
+                    <div class="driver-avatar me-3"
+                         style="width: 48px; height: 48px; font-size: 1.2rem; background-color: var(--gt-primary); color: white; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                        {% if ride.driver.first_name %}
+                            {{ ride.driver.first_name|slice:":1"|upper }}
+                        {% else %}
+                            {{ ride.driver.username|slice:":1"|upper }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span class="text-muted small d-block">Шофьор</span>
+                        <strong class="fs-6">
+                            {% if ride.driver.first_name or ride.driver.last_name %}
+                                {{ ride.driver.first_name }} {{ ride.driver.last_name }}
+                            {% else %}
+                                {{ ride.driver.username }}
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-2">
+                    {% if user.is_authenticated %}
+                        {% if user == ride.driver %}
+                            <div class="alert alert-secondary text-center mb-0">Това е вашето публикувано пътуване.
+                            </div>
+                        {% elif has_booked %}
+                            <div class="alert alert-info text-center mb-0">Запазили сте място за това пътуване.</div>
+                        {% elif ride.available_seats > 0 %}
+                            <form method="POST" action="{% url 'book_ride' ride.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-gt-accent w-100 py-2 fs-6">Резервирай място
+                                </button>
+                            </form>
+                        {% else %}
+                            <div class="alert alert-warning text-center mb-0">Няма останали свободни места.</div>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-gt-primary w-100 py-2">Влезте в профила си, за да
+                            резервирате</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
